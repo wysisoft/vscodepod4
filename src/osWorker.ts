@@ -1,46 +1,14 @@
-const FS_BUFFER_SIZE = 65536
-
-const State = {
-  IDLE: 0,
-  REQ_CHUNK: 1,
-  REQ_NEXT: 2,
-  RESP_CHUNK: 3,
-  RESP_NEXT: 4,
-} as const
-type State = typeof State[keyof typeof State]
-
-const HEADER_INTS = {
-  lock: 0,
-  state: 1,
-  length: 2,
-  flags: 3,
-}
-
-const HEADER_SIZE = 16
-const MAX_CHUNK = FS_BUFFER_SIZE - HEADER_SIZE
-const FLAG_LAST = 1
-
-const encoder = new TextEncoder()
-const decoder = new TextDecoder()
-
-function waitForState(ints: Int32Array, expected: State) {
-  while (true) {
-    const current = Atomics.load(ints, HEADER_INTS.state)
-    if (current === expected) return
-    Atomics.wait(ints, HEADER_INTS.state, current)
-  }
-}
-
-function concatChunks(chunks: Uint8Array[]): Uint8Array {
-  const total = chunks.reduce((sum, c) => sum + c.length, 0)
-  const result = new Uint8Array(total)
-  let pos = 0
-  for (const c of chunks) {
-    result.set(c, pos)
-    pos += c.length
-  }
-  return result
-}
+import { 
+  HEADER_SIZE, 
+  HEADER_INTS, 
+  State, 
+  waitForState, 
+  FLAG_LAST,
+  concatChunks,
+  decoder,
+  encoder,
+  MAX_CHUNK
+} from './messaging'
 
 function handleRequest(message: string): string {
   // Echo the request back with a prefix so the reply is larger than the request.
@@ -51,6 +19,8 @@ self.onmessage = (e: MessageEvent<{ osSAB: SharedArrayBuffer }>) => {
   const sab = e.data.osSAB
   const ints = new Int32Array(sab)
   const payload = new Uint8Array(sab, HEADER_SIZE)
+
+  self.postMessage({ type: 'done' })
 
   // Single osWorker instance keeps reading chunked requests forever.
   while (true) {
@@ -72,6 +42,9 @@ self.onmessage = (e: MessageEvent<{ osSAB: SharedArrayBuffer }>) => {
 
     const requestBytes = concatChunks(requestChunks)
     const message = decoder.decode(requestBytes)
+
+    console.log('request', message.substring(0, 10))
+
     const response = handleRequest(message)
     const responseBytes = encoder.encode(response)
 

@@ -1,6 +1,6 @@
-const FS_BUFFER_SIZE = 65536
+export const FS_BUFFER_SIZE = 65536
 
-const State = {
+export const State = {
     IDLE: 0,
     REQ_CHUNK: 1,
     REQ_NEXT: 2,
@@ -9,21 +9,21 @@ const State = {
 } as const
 type State = typeof State[keyof typeof State]
 
-const HEADER_INTS = {
+export const HEADER_INTS = {
     lock: 0,
     state: 1,
     length: 2,
     flags: 3,
 }
 
-const HEADER_SIZE = 16
-const MAX_CHUNK = FS_BUFFER_SIZE - HEADER_SIZE
-const FLAG_LAST = 1
+export const HEADER_SIZE = 16
+export const MAX_CHUNK = FS_BUFFER_SIZE - HEADER_SIZE
+export const FLAG_LAST = 1
 
-const encoder = new TextEncoder()
-const decoder = new TextDecoder()
+export const encoder = new TextEncoder()
+export const decoder = new TextDecoder()
 
-function waitForState(ints: Int32Array, expected: State) {
+export function waitForState(ints: Int32Array, expected: State) {
     while (true) {
         const current = Atomics.load(ints, HEADER_INTS.state)
         if (current === expected) return
@@ -43,7 +43,7 @@ function releaseLock(ints: Int32Array) {
     Atomics.notify(ints, HEADER_INTS.lock)
 }
 
-function concatChunks(chunks: Uint8Array[]): Uint8Array {
+export function concatChunks(chunks: Uint8Array[]): Uint8Array {
     const total = chunks.reduce((sum, c) => sum + c.length, 0)
     const result = new Uint8Array(total)
     let pos = 0
@@ -65,10 +65,9 @@ function concatChunks(chunks: Uint8Array[]): Uint8Array {
  *
  * Must be called from a worker thread that is allowed to block (Atomics.wait).
  */
-export function sendLongMessageThroughSAB(message: string): string {
-    const sab = this.osSAB
-    const ints = new Int32Array(sab)
-    const payload = new Uint8Array(sab, HEADER_SIZE)
+export function sendLongMessageThroughSAB(osSAB: SharedArrayBuffer, message: string): string {
+    const ints = new Int32Array(osSAB)
+    const payload = new Uint8Array(osSAB, HEADER_SIZE)
 
     acquireLock(ints)
 
