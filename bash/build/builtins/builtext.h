@@ -187,3 +187,7 @@ extern int mapfile_builtin (WORD_LIST *);
 extern char * const mapfile_doc[];
 extern int mapfile_builtin (WORD_LIST *);
 extern char * const readarray_doc[];
+extern int savememory_builtin (WORD_LIST *);
+extern char * const savememory_doc[];
+extern int savememory_builtin (WORD_LIST *);
+extern char * const saveMemory_doc[];

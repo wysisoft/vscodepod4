@@ -244,6 +244,10 @@ struct builtin static_shell_builtins[] = {
      N_("mapfile [-d delim] [-n count] [-O origin] [-s count] [-t] [-u fd] [-C callback] [-c quantum] [array]"), (char *)NULL },
   { "readarray", mapfile_builtin, BUILTIN_ENABLED | STATIC_BUILTIN, readarray_doc,
      N_("readarray [-d delim] [-n count] [-O origin] [-s count] [-t] [-u fd] [-C callback] [-c quantum] [array]"), (char *)NULL },
+  { "savememory", savememory_builtin, BUILTIN_ENABLED | STATIC_BUILTIN, savememory_doc,
+     N_("savememory [--summary | --full]"), (char *)NULL },
+  { "saveMemory", savememory_builtin, BUILTIN_ENABLED | STATIC_BUILTIN, saveMemory_doc,
+     N_("saveMemory [--summary | --full]"), (char *)NULL },
   { (char *)0x0, (sh_builtin_func_t *)0x0, 0, (char **)0x0, (char *)0x0, (char *)0x0 }
 };
 
@@ -2143,6 +2147,28 @@ char * const readarray_doc[] = {
 N_("Read lines from a file into an array variable.\n\
     \n\
     A synonym for `mapfile'."),
+#endif /* HELP_BUILTIN */
+  (char *)NULL
+};
+char * const savememory_doc[] = {
+#if defined (HELP_BUILTIN)
+N_("Dump wasm linear memory to the browser console.\n\
+    \n\
+    Options:\n\
+      --summary   log byteLength, checksum sample, and first bytes (default)\n\
+      --full      log entire linear memory as base64 chunks (browser console)\n\
+    \n\
+    Exit Status:\n\
+    Returns success unless an unknown option is given."),
+#endif /* HELP_BUILTIN */
+  (char *)NULL
+};
+char * const saveMemory_doc[] = {
+#if defined (HELP_BUILTIN)
+N_("Dump wasm linear memory to the browser console.\n\
+    \n\
+    Exit Status:\n\
+    Returns success unless an unknown option is given."),
 #endif /* HELP_BUILTIN */
   (char *)NULL
 };

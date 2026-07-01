@@ -1,0 +1,99 @@
+This file is savememory.def, from which is created savememory.c.
+It implements the vscodepod builtin "savememory" in Bash.
+
+$PRODUCES savememory.c
+
+$BUILTIN savememory
+$FUNCTION savememory_builtin
+$SHORT_DOC savememory [--summary | --full]
+Dump wasm linear memory to the browser console.
+
+Options:
+  --summary   log byteLength, checksum sample, and first bytes (default)
+  --full      log entire linear memory as base64 chunks (browser console)
+
+Exit Status:
+Returns success unless an unknown option is given.
+$END
+
+$BUILTIN saveMemory
+$FUNCTION savememory_builtin
+$SHORT_DOC saveMemory [--summary | --full]
+Dump wasm linear memory to the browser console.
+
+Exit Status:
+Returns success unless an unknown option is given.
+$END
+
+#include <config.h>
+
+#if defined (HAVE_UNISTD_H)
+#  include <unistd.h>
+#endif
+
+#include <stdio.h>
+#include <string.h>
+
+#include "../bashansi.h"
+#include "../bashtypes.h"
+#include "../shell.h"
+#include "common.h"
+
+#if defined(__EMSCRIPTEN__)
+extern int vscodepod_save_memory(int mode);
+#else
+static int
+vscodepod_save_memory(int mode)
+{
+  (void)mode;
+  return -1;
+}
+#endif
+
+/* 0 = summary, 1 = full base64 dump */
+enum { SAVEMEMORY_SUMMARY = 0, SAVEMEMORY_FULL = 1 };
+
+static int
+parse_savememory_mode(WORD_LIST *list)
+{
+  WORD_LIST *l;
+  int mode = SAVEMEMORY_SUMMARY;
+
+  for (l = list; l; l = l->next)
+    {
+      if (strcmp(l->word->word, "--summary") == 0)
+	mode = SAVEMEMORY_SUMMARY;
+      else if (strcmp(l->word->word, "--full") == 0)
+	mode = SAVEMEMORY_FULL;
+      else
+	{
+	  builtin_error("%s: unknown option", l->word->word);
+	  return -1;
+	}
+    }
+
+  return mode;
+}
+
+int
+savememory_builtin(WORD_LIST *list)
+{
+  int mode;
+
+  mode = parse_savememory_mode(list);
+  if (mode < 0)
+    return (EXECUTION_FAILURE);
+
+#if !defined(__EMSCRIPTEN__)
+  builtin_error("savememory: only available in the wasm build");
+  return (EXECUTION_FAILURE);
+#else
+  if (vscodepod_save_memory(mode) != 0)
+    {
+      builtin_error("savememory: failed");
+      return (EXECUTION_FAILURE);
+    }
+#endif
+
+  return (EXECUTION_SUCCESS);
+}
