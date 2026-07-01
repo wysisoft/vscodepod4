@@ -22,7 +22,7 @@
 srcdir = ../../../bash-5.3/lib/termcap
 VPATH = ../../../bash-5.3/lib/termcap
 topdir = ../../../bash-5.3
-BUILD_DIR = /home/a/bash53/build
+BUILD_DIR = /home/a/vscodepod4/vscodepod/bash/build
 
 libdir = ${exec_prefix}/lib
 
@@ -40,7 +40,7 @@ MV = mv
 
 SHELL = /bin/sh
 
-CFLAGS = -g -O2
+CFLAGS = -sASYNCIFY -sASYNCIFY_STACK_SIZE=8388608
 CPPFLAGS = 
 LDFLAGS =  -L./lib/termcap
 

@@ -1,0 +1,9 @@
+emmake make clean
+rm -f ../cache.txt
+
+emconfigure ../bash-5.3/configure --build="$(bash ../bash-5.3/support/config.guess)" --host wasm32-unknown-emscripten  --cache-file=../cache.txt bash_cv_posix_signals=yes bash_cv_signal_vintage=posix --without-bash-malloc   CFLAGS='-sASYNCIFY -sASYNCIFY_STACK_SIZE=8388608'
+emmake make   LDFLAGS='-sFORCE_FILESYSTEM=1 -sEXPORTED_RUNTIME_METHODS=FS,callMain -sMODULARIZE=1 -sEXPORT_NAME=createBashModule -sEXPORT_ES6=1 -sENVIRONMENT=web -sASYNCIFY -sASYNCIFY_STACK_SIZE=8388608 -sASYNCIFY_IMPORTS=js_checkpoint --js-library=/home/a/vscodepod4/vscodepod/node_modules/xterm-pty/emscripten-pty.js -o bash.mjs'
+emmake make Program=bash.mjs LDFLAGS='-sFORCE_FILESYSTEM=1 -sEXPORTED_RUNTIME_METHODS=FS,callMain -sMODULARIZE=1 -sEXPORT_NAME=createBashModule -sEXPORT_ES6=1 -sENVIRONMENT=web -sASYNCIFY -sASYNCIFY_STACK_SIZE=8388608 -sASYNCIFY_IMPORTS=js_checkpoint --js-library=/home/a/vscodepod4/vscodepod/node_modules/xterm-pty/emscripten-pty.js'
+
+cp /home/a/vscodepod4/vscodepod/bash/build/bash.wasm /home/a/vscodepod4/vscodepod/public/bash/bash.wasm
+cp /home/a/vscodepod4/vscodepod/bash/build/bash.mjs /home/a/vscodepod4/vscodepod/public/bash/bash.mjs

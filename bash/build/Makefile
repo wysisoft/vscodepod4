@@ -62,8 +62,8 @@ htmldir = ${docdir}
 DESTDIR =
 
 topdir = ../bash-5.3
-BUILD_DIR = /home/a/bash53/build
-top_builddir = /home/a/bash53/build
+BUILD_DIR = /home/a/vscodepod4/vscodepod/bash/build
+top_builddir = /home/a/vscodepod4/vscodepod/bash/build
 srcdir = ../bash-5.3
 VPATH = ../bash-5.3
 
@@ -89,7 +89,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALLMODE= -m 0755
 INSTALLMODE2 = -m 0555
 
-install_sh = ${SHELL} /home/a/bash53/bash-5.3/support/install-sh
+install_sh = ${SHELL} /home/a/vscodepod4/vscodepod/bash/bash-5.3/support/install-sh
 
 CTAGS = ctags
 CTAGSFLAGS = -x
@@ -133,12 +133,12 @@ THIS_SH = $(BUILD_DIR)/$(Program)
 # with gprof, or nothing (the default).
 PROFILE_FLAGS= 
 
-CFLAGS = -g -O2
+CFLAGS = -sASYNCIFY -sASYNCIFY_STACK_SIZE=8388608
 CFLAGS_FOR_BUILD = -g -DCROSS_COMPILING
 CPPFLAGS = 
 CPPFLAGS_FOR_BUILD = 
 LOCAL_CFLAGS =  ${DEBUG} ${MALLOC_DEBUG}
-STYLE_CFLAGS = -Wno-parentheses -Wno-format-security
+STYLE_CFLAGS = 
 DEFS = -DHAVE_CONFIG_H
 LOCAL_DEFS = -DSHELL
 

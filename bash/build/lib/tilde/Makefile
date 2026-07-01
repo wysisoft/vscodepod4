@@ -22,7 +22,7 @@
 srcdir = ../../../bash-5.3/lib/tilde
 VPATH = ../../../bash-5.3/lib/tilde
 topdir = ../../../bash-5.3
-BUILD_DIR = /home/a/bash53/build
+BUILD_DIR = /home/a/vscodepod4/vscodepod/bash/build
 
 INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
@@ -42,9 +42,9 @@ PROFILE_FLAGS =
 
 ADDON_CFLAGS =
 
-CFLAGS = -g -O2
+CFLAGS = -sASYNCIFY -sASYNCIFY_STACK_SIZE=8388608
 LOCAL_CFLAGS = 
-STYLE_CFLAGS = -Wno-parentheses -Wno-format-security
+STYLE_CFLAGS = 
 CPPFLAGS = 
 LDFLAGS =  -L./lib/termcap 
 

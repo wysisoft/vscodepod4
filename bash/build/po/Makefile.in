@@ -19,7 +19,7 @@ top_srcdir = ../../bash-5.3
 VPATH = ../../bash-5.3/po
 
 topdir = ../../bash-5.3
-BUILD_DIR = /home/a/bash53/build
+BUILD_DIR = /home/a/vscodepod4/vscodepod/bash/build
 
 prefix = /usr/local
 exec_prefix = ${prefix}

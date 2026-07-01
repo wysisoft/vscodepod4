@@ -30,7 +30,7 @@ includedir = ${prefix}/include
 datarootdir = ${prefix}/share
 
 topdir = ../../../../bash-5.3
-BUILD_DIR = /home/a/bash53/build
+BUILD_DIR = /home/a/vscodepod4/vscodepod/bash/build
 srcdir = ../../../../bash-5.3/examples/loadables/perl
 VPATH = ../../../../bash-5.3/examples/loadables/perl
 
@@ -42,7 +42,7 @@ SHELL = /bin/sh
 
 PERL5 = perl5
 
-CFLAGS = -g -O2
+CFLAGS = -sASYNCIFY -sASYNCIFY_STACK_SIZE=8388608
 
 #
 # These values are generated for configure by ${topdir}/support/shobj-conf.

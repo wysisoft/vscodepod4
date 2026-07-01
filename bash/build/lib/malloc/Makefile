@@ -18,7 +18,7 @@
 srcdir = ../../../bash-5.3/lib/malloc
 VPATH = ../../../bash-5.3/lib/malloc
 topdir = ../../../bash-5.3
-BUILD_DIR = /home/a/bash53/build
+BUILD_DIR = /home/a/vscodepod4/vscodepod/bash/build
 
 INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
@@ -36,9 +36,9 @@ SHELL = /bin/sh
 
 PROFILE_FLAGS = 
 
-CFLAGS = -g -O2
+CFLAGS = -sASYNCIFY -sASYNCIFY_STACK_SIZE=8388608
 LOCAL_CFLAGS = 
-STYLE_CFLAGS = -Wno-parentheses -Wno-format-security
+STYLE_CFLAGS = 
 CPPFLAGS = 
 LDFLAGS =  -L./lib/termcap
 

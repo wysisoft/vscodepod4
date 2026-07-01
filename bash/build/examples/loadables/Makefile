@@ -35,7 +35,7 @@ loadablesdir = ${libdir}/bash
 headersdir = $(includedir)/$(PACKAGE_NAME)
 
 topdir = ../../../bash-5.3
-BUILD_DIR = /home/a/bash53/build
+BUILD_DIR = /home/a/vscodepod4/vscodepod/bash/build
 srcdir = ../../../bash-5.3/examples/loadables
 VPATH = ../../../bash-5.3/examples/loadables
 
@@ -58,8 +58,8 @@ host_os = emscripten
 host_cpu = wasm32
 host_vendor = unknown
 
-STYLE_CFLAGS = -Wno-parentheses -Wno-format-security
-CFLAGS = -g -O2
+STYLE_CFLAGS = 
+CFLAGS = -sASYNCIFY -sASYNCIFY_STACK_SIZE=8388608
 LOCAL_CFLAGS = 
 DEFS = -DHAVE_CONFIG_H
 LOCAL_DEFS = -DSHELL

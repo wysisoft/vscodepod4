@@ -22,7 +22,7 @@ SHELL = /bin/sh
 
 srcdir = ../../../bash-5.3/lib/intl
 top_srcdir = ../../../bash-5.3
-top_builddir = /home/a/bash53/build
+top_builddir = /home/a/vscodepod4/vscodepod/bash/build
 VPATH = $(srcdir)
 
 prefix = /usr/local
@@ -73,7 +73,7 @@ RELOCATABLE_DEFS = -DENABLE_RELOCATABLE=1 -DIN_LIBRARY \
 	-DDEPENDS_ON_LIBICONV=1
 
 CPPFLAGS = 
-CFLAGS = -g -O2 ${DEFS} -DHAVE_CONFIG_H ${LOCAL_DEFS}
+CFLAGS = -sASYNCIFY -sASYNCIFY_STACK_SIZE=8388608 ${DEFS} -DHAVE_CONFIG_H ${LOCAL_DEFS}
 LDFLAGS =  -L./lib/termcap
 LIBS = -ldl 
 

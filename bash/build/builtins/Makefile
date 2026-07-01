@@ -52,16 +52,16 @@ DESTDIR =
 
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
-BUILD_DIR = /home/a/bash53/build
+BUILD_DIR = /home/a/vscodepod4/vscodepod/bash/build
 
 LIBBUILD = ${BUILD_DIR}/lib
 
 DEBUG = 
 
 PROFILE_FLAGS = 
-CFLAGS = -g -O2
+CFLAGS = -sASYNCIFY -sASYNCIFY_STACK_SIZE=8388608
 CFLAGS_FOR_BUILD = -g -DCROSS_COMPILING
-STYLE_CFLAGS = -Wno-parentheses -Wno-format-security
+STYLE_CFLAGS = 
 CPPFLAGS = 
 CPPFLAGS_FOR_BUILD = 
 LOCAL_CFLAGS =  ${DEBUG}

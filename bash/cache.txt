@@ -27,8 +27,8 @@ ac_cv_env_CC_set=set
 ac_cv_env_CC_value=/home/a/empscripten/emsdk/upstream/emscripten/emcc
 ac_cv_env_CFLAGS_FOR_BUILD_set=
 ac_cv_env_CFLAGS_FOR_BUILD_value=
-ac_cv_env_CFLAGS_set=
-ac_cv_env_CFLAGS_value=
+ac_cv_env_CFLAGS_set=set
+ac_cv_env_CFLAGS_value='-sASYNCIFY -sASYNCIFY_STACK_SIZE=8388608'
 ac_cv_env_CPPFLAGS_FOR_BUILD_set=
 ac_cv_env_CPPFLAGS_FOR_BUILD_value=
 ac_cv_env_CPPFLAGS_set=
@@ -397,7 +397,7 @@ acl_cv_hardcode_direct=${acl_cv_hardcode_direct=no}
 test ${acl_cv_hardcode_libdir_flag_spec+y} || acl_cv_hardcode_libdir_flag_spec='${wl}-rpath ${wl}$libdir'
 acl_cv_hardcode_libdir_separator=${acl_cv_hardcode_libdir_separator=}
 acl_cv_hardcode_minus_L=${acl_cv_hardcode_minus_L=no}
-acl_cv_libdirstems=${acl_cv_libdirstems=lib,lib,lib64}
+acl_cv_libdirstems=${acl_cv_libdirstems=lib,lib32,lib64}
 acl_cv_libext=${acl_cv_libext=a}
 acl_cv_libname_spec=${acl_cv_libname_spec='lib$name'}
 acl_cv_library_names_spec=${acl_cv_library_names_spec=}
@@ -443,7 +443,7 @@ bash_cv_struct_timezone=${bash_cv_struct_timezone=yes}
 bash_cv_struct_winsize_header=${bash_cv_struct_winsize_header=ioctl_h}
 bash_cv_struct_winsize_ioctl=${bash_cv_struct_winsize_ioctl=yes}
 bash_cv_struct_winsize_termios=${bash_cv_struct_winsize_termios=yes}
-bash_cv_sys_errlist=${bash_cv_sys_errlist=yes}
+bash_cv_sys_errlist=${bash_cv_sys_errlist=no}
 bash_cv_sys_named_pipes=${bash_cv_sys_named_pipes=missing}
 bash_cv_sys_siglist=${bash_cv_sys_siglist=no}
 bash_cv_sys_struct_timespec_in_time_h=${bash_cv_sys_struct_timespec_in_time_h=yes}
@@ -463,7 +463,7 @@ bash_cv_wcontinued_broken=${bash_cv_wcontinued_broken=no}
 bash_cv_wcwidth_broken=${bash_cv_wcwidth_broken=no}
 bash_cv_wexitstatus_offset=${bash_cv_wexitstatus_offset=0}
 gl_cv_c_bool=${gl_cv_c_bool=no}
-gl_cv_cc_vis_werror=${gl_cv_cc_vis_werror=yes}
+gl_cv_cc_vis_werror=${gl_cv_cc_vis_werror=no}
 gl_cv_cc_visibility=${gl_cv_cc_visibility=yes}
 gl_cv_elf=${gl_cv_elf=no}
 gl_cv_have_weak=${gl_cv_have_weak='guessing no'}

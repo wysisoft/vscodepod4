@@ -30,7 +30,7 @@
 topdir = ../../bash-5.3
 srcdir = ../../bash-5.3/support
 VPATH = ../../bash-5.3/support
-BUILD_DIR = /home/a/bash53/build
+BUILD_DIR = /home/a/vscodepod4/vscodepod/bash/build
 
 RM	= rm -f
 SHELL	= /bin/sh
@@ -44,12 +44,12 @@ EXEEXT =
 #
 PROFILE_FLAGS = 
 
-CFLAGS = -g -O2
+CFLAGS = -sASYNCIFY -sASYNCIFY_STACK_SIZE=8388608
 CFLAGS_FOR_BUILD = -g
 CPPFLAGS = 
 CPPFLAGS_FOR_BUILD = 
 LOCAL_CFLAGS = 
-STYLE_CFLAGS = -Wno-parentheses -Wno-format-security
+STYLE_CFLAGS = 
 DEFS = -DHAVE_CONFIG_H
 LOCAL_DEFS = -DSHELL
 

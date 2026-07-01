@@ -422,7 +422,7 @@
 
 /* #undef HAVE_UNDER_SYS_SIGLIST */
 
-#define HAVE_SYS_ERRLIST 1
+/* #undef HAVE_SYS_ERRLIST */
 
 /* #undef HAVE_TZNAME */
 /* #undef HAVE_DECL_TZNAME */

@@ -29,7 +29,7 @@
 MACHINE="wasm32"
 OS="emscripten"
 CC="/home/a/empscripten/emsdk/upstream/emscripten/emcc"
-CFLAGS="-g -O2"
+CFLAGS="-sASYNCIFY -sASYNCIFY_STACK_SIZE=8388608"
 RELEASE="5.3"
 PATCHLEVEL="!PATCHLEVEL!"
 RELSTATUS="release"
