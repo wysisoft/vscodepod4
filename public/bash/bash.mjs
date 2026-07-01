@@ -6274,16 +6274,56 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
 
   var _random_get = (buffer, size) => randomFill(HEAPU8.subarray(buffer, buffer + size));
 
-  function _vscodepod_save_memory(mode) {
+  
+  
+  function _vscodepod_load_memory(pathPtr) {
+      var path = UTF8ToString(pathPtr);
+      if (!path) {
+        return -1;
+      }
+      var data;
+      try {
+        data = FS.readFile(path);
+      } catch (e) {
+        console.error('[loadmemory] failed to read ' + path + ': ' + e);
+        return -2;
+      }
+      if (!(data instanceof Uint8Array)) {
+        data = new Uint8Array(data);
+      }
+      var target = new Uint8Array(wasmMemory.buffer);
+      if (data.length !== target.length) {
+        console.error(
+          '[loadmemory] size mismatch: file=' + data.length + ' memory=' + target.length,
+        );
+        return -3;
+      }
+      target.set(data);
+      var sum = Module['vscodepod_memory_checksum']();
+      console.log('[loadmemory] restored ' + data.length + ' bytes from ' + path);
+      console.log('  sampledChecksum: ' + sum);
+      return 0;
+    }
+
+  
+  
+  function _vscodepod_save_memory(mode, pathPtr) {
       mode = mode | 0;
       var buffer = wasmMemory.buffer;
       var bytes = new Uint8Array(buffer);
       var len = bytes.length;
-      var sum = 0;
+      var sum = Module['vscodepod_memory_checksum']();
       var i;
   
-      for (i = 0; i < len; i += 4096) {
-        sum = (sum + bytes[i]) | 0;
+      if (mode === 2) {
+        var path = UTF8ToString(pathPtr);
+        if (!path) {
+          return -1;
+        }
+        FS.writeFile(path, bytes);
+        console.log('[savememory] wrote ' + len + ' bytes to ' + path);
+        console.log('  sampledChecksum: ' + sum);
+        return 0;
       }
   
       if (mode === 0) {
@@ -7129,6 +7169,8 @@ var wasmImports = {
   proc_exit: _proc_exit,
   /** @export */
   random_get: _random_get,
+  /** @export */
+  vscodepod_load_memory: _vscodepod_load_memory,
   /** @export */
   vscodepod_save_memory: _vscodepod_save_memory
 };

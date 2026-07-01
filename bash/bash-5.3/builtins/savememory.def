@@ -1,16 +1,17 @@
 This file is savememory.def, from which is created savememory.c.
-It implements the vscodepod builtin "savememory" in Bash.
+It implements the vscodepod memory builtins in Bash.
 
 $PRODUCES savememory.c
 
 $BUILTIN savememory
 $FUNCTION savememory_builtin
-$SHORT_DOC savememory [--summary | --full]
-Dump wasm linear memory to the browser console.
+$SHORT_DOC savememory [--summary | --full | --file PATH]
+Dump wasm linear memory to the browser console or a file.
 
 Options:
-  --summary   log byteLength, checksum sample, and first bytes (default)
-  --full      log entire linear memory as base64 chunks (browser console)
+  --summary       log byteLength, checksum sample, and first bytes (default)
+  --full          log entire linear memory as base64 chunks (browser console)
+  --file PATH     write raw linear memory bytes to PATH (for loadmemory)
 
 Exit Status:
 Returns success unless an unknown option is given.
@@ -18,11 +19,34 @@ $END
 
 $BUILTIN saveMemory
 $FUNCTION savememory_builtin
-$SHORT_DOC saveMemory [--summary | --full]
-Dump wasm linear memory to the browser console.
+$SHORT_DOC saveMemory [--summary | --full | --file PATH]
+Dump wasm linear memory to the browser console or a file.
 
 Exit Status:
 Returns success unless an unknown option is given.
+$END
+
+$BUILTIN loadmemory
+$FUNCTION loadmemory_builtin
+$SHORT_DOC loadmemory [--file PATH]
+Restore wasm linear memory from a file written by savememory --file.
+
+Options:
+  --file PATH     read raw linear memory bytes from PATH
+
+If PATH is omitted, --file is required.
+
+Exit Status:
+Returns success unless the file cannot be read or sizes differ.
+$END
+
+$BUILTIN loadMemory
+$FUNCTION loadmemory_builtin
+$SHORT_DOC loadMemory [--file PATH]
+Restore wasm linear memory from a file written by savememory --file.
+
+Exit Status:
+Returns success unless the file cannot be read or sizes differ.
 $END
 
 #include <config.h>
@@ -40,57 +64,161 @@ $END
 #include "common.h"
 
 #if defined(__EMSCRIPTEN__)
-extern int vscodepod_save_memory(int mode);
+extern int vscodepod_save_memory(int mode, const char *path);
+extern int vscodepod_load_memory(const char *path);
 #else
 static int
-vscodepod_save_memory(int mode)
+vscodepod_save_memory(int mode, const char *path)
 {
   (void)mode;
+  (void)path;
+  return -1;
+}
+
+static int
+vscodepod_load_memory(const char *path)
+{
+  (void)path;
   return -1;
 }
 #endif
 
-/* 0 = summary, 1 = full base64 dump */
-enum { SAVEMEMORY_SUMMARY = 0, SAVEMEMORY_FULL = 1 };
+enum {
+  SAVEMEMORY_SUMMARY = 0,
+  SAVEMEMORY_FULL = 1,
+  SAVEMEMORY_FILE = 2
+};
 
 static int
-parse_savememory_mode(WORD_LIST *list)
+parse_savememory_args(WORD_LIST *list, int *mode, char **path)
 {
   WORD_LIST *l;
-  int mode = SAVEMEMORY_SUMMARY;
+  char *word;
+
+  *mode = SAVEMEMORY_SUMMARY;
+  *path = (char *)NULL;
 
   for (l = list; l; l = l->next)
     {
-      if (strcmp(l->word->word, "--summary") == 0)
-	mode = SAVEMEMORY_SUMMARY;
-      else if (strcmp(l->word->word, "--full") == 0)
-	mode = SAVEMEMORY_FULL;
+      word = l->word->word;
+      if (strcmp(word, "--summary") == 0)
+	*mode = SAVEMEMORY_SUMMARY;
+      else if (strcmp(word, "--full") == 0)
+	*mode = SAVEMEMORY_FULL;
+      else if (strcmp(word, "--file") == 0)
+	{
+	  *mode = SAVEMEMORY_FILE;
+	  if (l->next == 0)
+	    {
+	      builtin_error("--file requires a path argument");
+	      return 0;
+	    }
+	  *path = l->next->word->word;
+	  l = l->next;
+	}
       else
 	{
-	  builtin_error("%s: unknown option", l->word->word);
-	  return -1;
+	  builtin_error("%s: unknown option", word);
+	  return 0;
 	}
     }
 
-  return mode;
+  if (*mode == SAVEMEMORY_FILE && *path == 0)
+    {
+      builtin_error("--file requires a path argument");
+      return 0;
+    }
+
+  return 1;
+}
+
+static char *
+parse_loadmemory_path(WORD_LIST *list)
+{
+  char *path;
+  WORD_LIST *rest;
+
+  if (list == 0)
+    {
+      builtin_error("loadmemory: --file PATH required");
+      return (char *)NULL;
+    }
+
+  path = list->word->word;
+  rest = list->next;
+
+  if (strcmp(path, "--file") == 0)
+    {
+      if (rest == 0)
+	{
+	  builtin_error("loadmemory: --file requires a path argument");
+	  return (char *)NULL;
+	}
+      return rest->word->word;
+    }
+
+  if (rest)
+    {
+      builtin_error("loadmemory: too many arguments");
+      return (char *)NULL;
+    }
+
+  return path;
 }
 
 int
 savememory_builtin(WORD_LIST *list)
 {
   int mode;
+  char *path;
+  int rc;
 
-  mode = parse_savememory_mode(list);
-  if (mode < 0)
+  if (!parse_savememory_args(list, &mode, &path))
     return (EXECUTION_FAILURE);
 
 #if !defined(__EMSCRIPTEN__)
   builtin_error("savememory: only available in the wasm build");
   return (EXECUTION_FAILURE);
 #else
-  if (vscodepod_save_memory(mode) != 0)
+  rc = vscodepod_save_memory(mode, path);
+  if (rc != 0)
     {
-      builtin_error("savememory: failed");
+      builtin_error("savememory: failed (%d)", rc);
+      return (EXECUTION_FAILURE);
+    }
+#endif
+
+  return (EXECUTION_SUCCESS);
+}
+
+int
+loadmemory_builtin(WORD_LIST *list)
+{
+  char *path;
+  int rc;
+
+  path = parse_loadmemory_path(list);
+  if (path == 0)
+    return (EXECUTION_FAILURE);
+
+#if !defined(__EMSCRIPTEN__)
+  builtin_error("loadmemory: only available in the wasm build");
+  return (EXECUTION_FAILURE);
+#else
+  rc = vscodepod_load_memory(path);
+  if (rc == -2)
+    {
+      builtin_error("loadmemory: cannot read %s", path);
+      return (EXECUTION_FAILURE);
+    }
+  if (rc == -3)
+    {
+      builtin_error("loadmemory: file size does not match linear memory size");
+      return (EXECUTION_FAILURE);
+    }
+  if (rc != 0)
+    {
+      builtin_error("loadmemory: failed (%d)", rc);
       return (EXECUTION_FAILURE);
     }
 #endif

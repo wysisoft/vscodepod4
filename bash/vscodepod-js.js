@@ -4,21 +4,37 @@
 mergeInto(LibraryManager.library, {
   js_checkpoint__deps: ['$wasmMemory'],
   js_checkpoint: function (_op) {
-    // Reserved for future checkpoint save/load via asyncify.
     return 0;
   },
 
-  vscodepod_save_memory__deps: ['$wasmMemory'],
-  vscodepod_save_memory: function (mode) {
+  vscodepod_memory_checksum__deps: ['$wasmMemory'],
+  vscodepod_memory_checksum: function () {
+    var bytes = new Uint8Array(wasmMemory.buffer);
+    var sum = 0;
+    for (var i = 0; i < bytes.length; i += 4096) {
+      sum = (sum + bytes[i]) | 0;
+    }
+    return sum;
+  },
+
+  vscodepod_save_memory__deps: ['$wasmMemory', '$FS'],
+  vscodepod_save_memory: function (mode, pathPtr) {
     mode = mode | 0;
     var buffer = wasmMemory.buffer;
     var bytes = new Uint8Array(buffer);
     var len = bytes.length;
-    var sum = 0;
+    var sum = Module['vscodepod_memory_checksum']();
     var i;
 
-    for (i = 0; i < len; i += 4096) {
-      sum = (sum + bytes[i]) | 0;
+    if (mode === 2) {
+      var path = UTF8ToString(pathPtr);
+      if (!path) {
+        return -1;
+      }
+      FS.writeFile(path, bytes);
+      console.log('[savememory] wrote ' + len + ' bytes to ' + path);
+      console.log('  sampledChecksum: ' + sum);
+      return 0;
     }
 
     if (mode === 0) {
@@ -50,6 +66,36 @@ mergeInto(LibraryManager.library, {
       console.log(btoa(bin));
     }
     console.log('[savememory] dump complete');
+    return 0;
+  },
+
+  vscodepod_load_memory__deps: ['$wasmMemory', '$FS'],
+  vscodepod_load_memory: function (pathPtr) {
+    var path = UTF8ToString(pathPtr);
+    if (!path) {
+      return -1;
+    }
+    var data;
+    try {
+      data = FS.readFile(path);
+    } catch (e) {
+      console.error('[loadmemory] failed to read ' + path + ': ' + e);
+      return -2;
+    }
+    if (!(data instanceof Uint8Array)) {
+      data = new Uint8Array(data);
+    }
+    var target = new Uint8Array(wasmMemory.buffer);
+    if (data.length !== target.length) {
+      console.error(
+        '[loadmemory] size mismatch: file=' + data.length + ' memory=' + target.length,
+      );
+      return -3;
+    }
+    target.set(data);
+    var sum = Module['vscodepod_memory_checksum']();
+    console.log('[loadmemory] restored ' + data.length + ' bytes from ' + path);
+    console.log('  sampledChecksum: ' + sum);
     return 0;
   },
 });

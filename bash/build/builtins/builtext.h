@@ -191,3 +191,7 @@ extern int savememory_builtin (WORD_LIST *);
 extern char * const savememory_doc[];
 extern int savememory_builtin (WORD_LIST *);
 extern char * const saveMemory_doc[];
+extern int loadmemory_builtin (WORD_LIST *);
+extern char * const loadmemory_doc[];
+extern int loadmemory_builtin (WORD_LIST *);
+extern char * const loadMemory_doc[];
