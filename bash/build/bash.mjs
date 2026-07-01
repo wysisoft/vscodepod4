@@ -6299,7 +6299,10 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
         return -3;
       }
       target.set(data);
-      var sum = Module['vscodepod_memory_checksum']();
+      var sum = 0;
+      for (var i = 0; i < target.length; i += 4096) {
+        sum = (sum + target[i]) | 0;
+      }
       console.log('[loadmemory] restored ' + data.length + ' bytes from ' + path);
       console.log('  sampledChecksum: ' + sum);
       return 0;
@@ -6312,8 +6315,12 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
       var buffer = wasmMemory.buffer;
       var bytes = new Uint8Array(buffer);
       var len = bytes.length;
-      var sum = Module['vscodepod_memory_checksum']();
+      var sum = 0;
       var i;
+  
+      for (i = 0; i < len; i += 4096) {
+        sum = (sum + bytes[i]) | 0;
+      }
   
       if (mode === 2) {
         var path = UTF8ToString(pathPtr);
